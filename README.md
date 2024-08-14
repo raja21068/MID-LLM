@@ -23,6 +23,7 @@ This project combines machine learning, federated learning, and blockchain techn
 - Visualization of 3D brain MRI data.
 
 ## Project Structure
+llm/
 │
 ├── config.py # Configuration settings and seeding
 ├── ipfs_blockchain.py # IPFS and Blockchain integration
