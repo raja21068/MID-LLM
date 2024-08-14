@@ -22,6 +22,21 @@ This project combines machine learning, federated learning, and blockchain techn
 - Use of OpenAI's GPT model to generate detailed reports based on classification results.
 - Visualization of 3D brain MRI data.
 
+## Project Structure
+brain-tumor-detection/
+│
+├── config.py # Configuration settings and seeding
+├── ipfs_blockchain.py # IPFS and Blockchain integration
+├── utils.py # Utility functions and classes for image processing and metrics
+├── dataset.py # Dataset class for loading and preprocessing data
+├── models.py # Model architectures for brain tumor detection
+├── client.py # Client (Hospital) class for local training and parameter sharing
+├── aggregator.py # Aggregator (Research Center) class for parameter aggregation
+├── inference.py # Inference and report generation using the global model
+├── train.py # Main script for training and federated learning simulation
+├── requirements.txt # Python dependencies
+└── README.md # Project overview and instructions
+
 ## Requirements
 
 - Python 3.7 or later
