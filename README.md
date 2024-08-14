@@ -23,19 +23,36 @@ This project combines machine learning, federated learning, and blockchain techn
 - Visualization of 3D brain MRI data.
 
 ## Project Structure
-llm/
-│
-(`│`)config.py # Configuration settings and seeding
-(`│`) ipfs_blockchain.py # IPFS and Blockchain integration
-(`│`) utils.py # Utility functions and classes for image processing and metrics
-(`│`) dataset.py # Dataset class for loading and preprocessing data
-(`│`) models.py # Model architectures for brain tumor detection
-(`│`)client.py # Client (Hospital) class for local training and parameter sharing
-(`│`)aggregator.py # Aggregator (Research Center) class for parameter aggregation
-├── inference.py # Inference and report generation using the global model
-├── train.py # Main script for training and federated learning simulation
-├── requirements.txt # Python dependencies
-└── README.md # Project overview and instructions
+
+1. **config.py**  
+   - Configuration settings and seeding
+
+2. **ipfs_blockchain.py**  
+   - IPFS and Blockchain integration
+
+3. **utils.py**  
+   - Utility functions and classes for image processing and metrics
+
+4. **dataset.py**  
+   - Dataset class for loading and preprocessing data
+
+5. **models.py**  
+   - Model architectures for brain tumor detection
+
+6. **client.py**  
+   - Client (Hospital) class for local training and parameter sharing
+
+7. **aggregator.py**  
+   - Aggregator (Research Center) class for parameter aggregation
+
+8. **inference.py**  
+   - Inference and report generation using the global model
+
+9. **train.py**  
+   - Main script for training and federated learning simulation
+
+10. **requirements.txt**  
+    - Python dependencies
 
 ## Requirements
 
