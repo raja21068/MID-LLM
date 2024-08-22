@@ -1,0 +1,113 @@
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
+import numpy as np
+import json
+
+# Simplified Global Config
+class GlobalConfig:
+    seed = 55
+
+def seed_everything(seed: int):
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+config = GlobalConfig()
+seed_everything(config.seed)
+
+# Simplified Dataset
+num_samples = 100
+num_features = 10
+num_classes = 2
+
+X_train = torch.randn(num_samples, num_features)
+y_train = torch.randint(0, num_classes, (num_samples,))
+train_dataset = TensorDataset(X_train, y_train)
+train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+
+# Simplified Model
+class SimpleModel(nn.Module):
+    def __init__(self):
+        super(SimpleModel, self).__init__()
+        self.fc = nn.Linear(num_features, num_classes)
+
+    def forward(self, x):
+        return self.fc(x)
+
+# Local Training and Parameter Sharing
+class ClientHospital:
+    def __init__(self, name, data, model):
+        self.name = name
+        self.data = data
+        self.model = model
+        self.local_params = None
+
+    def local_training(self, epochs=1):
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=0.01)
+        criterion = nn.CrossEntropyLoss()
+
+        for epoch in range(epochs):
+            running_loss = 0.0
+            for inputs, labels in self.data:
+                optimizer.zero_grad()
+                outputs = self.model(inputs)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+                running_loss += loss.item()
+            print(f"Client {self.name} Epoch {epoch + 1}, Loss: {running_loss / len(self.data)}")
+
+        self.local_params = self.model.state_dict()
+        serialized_params = json.dumps({k: v.tolist() for k, v in self.local_params.items()})
+        return serialized_params
+
+class WorkerResearchCenter:
+    def __init__(self, name):
+        self.name = name
+        self.aggregated_params = None
+
+    def aggregate_parameters(self, client_params):
+        aggregated_model = {}
+        count = 0
+        for params in client_params:
+            local_params = json.loads(params)
+            if not aggregated_model:
+                aggregated_model = {k: torch.tensor(v, device=device) for k, v in local_params.items()}
+            else:
+                for k in aggregated_model.keys():
+                    aggregated_model[k] += torch.tensor(local_params[k], device=device)
+            count += 1
+
+        if count > 0:
+            for k in aggregated_model.keys():
+                aggregated_model[k] /= count
+            self.aggregated_params = {k: v.cpu().tolist() for k, v in aggregated_model.items()}
+            result = json.dumps(self.aggregated_params)
+            return result
+        return None
+
+# Simulate Local Training and Parameter Sharing
+clients = [
+    ClientHospital("Hospital A", train_loader, SimpleModel()),
+    ClientHospital("Hospital B", train_loader, SimpleModel())
+]
+
+workers = [
+    WorkerResearchCenter("Research Center A")
+]
+
+client_params = []
+for client in clients:
+    params = client.local_training()
+    client_params.append(params)
+
+# Aggregate parameters at the research center
+aggregated_params = None
+for worker in workers:
+    aggregated_params = worker.aggregate_parameters(client_params)
+
+# Output the aggregated parameters
+print("Aggregated Parameters:", aggregated_params)
